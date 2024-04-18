@@ -1,0 +1,91 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+<Layout>
+    <h1 id="valor" class="text-2xl text-white flex justify-center items-center py-16 font-bold"></h1>
+    <div id="contenedor-tarjeta" class=" flex flex-row py-44">
+        <div class="basis-4/12"></div>
+    </div>
+</Layout>
+
+<script>
+    function obtenerValorCookie(nombre) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(`${nombre}=`)) {
+                return cookie.substring(nombre.length + 1);
+            }
+        }
+        return null;
+    }
+
+    const valorProvincia = obtenerValorCookie('provinciaSeleccionada');
+
+    const tituloProvincia = document.getElementById('valor');
+    if (valorProvincia) {
+        tituloProvincia.textContent = `TIEMPO EN: ${valorProvincia}`;
+    } else {
+        tituloProvincia.textContent = 'TIEMPO EN: N/A';
+    }
+
+    const apiUrl = 'https://www.el-tiempo.net/api/json/v2/home';
+
+    function filtrarDatosCiudad(datos, nombreCiudad) {
+        const ciudad = datos.ciudades.find(c => c.name === nombreCiudad);
+        return ciudad;
+    }
+
+    function mostrarDatosProvincia(ciudad) {
+        const tarjeta = document.createElement('div');
+        tarjeta.classList.add('text-xl','shadow-md', 'rounded-md', 'p-4', 'bg-white', 'flex', 'justify-center', 'items-center', 'flex-col', 'mb-4', 'basis-4/12', 'py-20', 'hover:scale-105', 'transition-transform', 'duration-500');
+
+        const nombreCiudadElemento = document.createElement('h2');
+        nombreCiudadElemento.textContent = ciudad.name;
+        nombreCiudadElemento.classList.add('text-lg', 'font-bold', 'mb-2', 'shadow-cyan-500/50');
+        tarjeta.appendChild(nombreCiudadElemento);
+
+        const temperaturaMaximaElemento = document.createElement('p');
+        temperaturaMaximaElemento.textContent = `Temperatura Máxima: ${ciudad.temperatures.max}°C`;
+        temperaturaMaximaElemento.classList.add('mb-1', 'text-red-500');
+        tarjeta.appendChild(temperaturaMaximaElemento);
+
+        const temperaturaMinimaElemento = document.createElement('p');
+        temperaturaMinimaElemento.textContent = `Temperatura Mínima: ${ciudad.temperatures.min}°C`;
+        temperaturaMinimaElemento.classList.add('mb-1', 'text-blue-500');
+        tarjeta.appendChild(temperaturaMinimaElemento);
+
+        const estadoCieloElemento = document.createElement('p');
+        estadoCieloElemento.textContent = `Estado del Cielo: ${ciudad.stateSky.description}`;
+        estadoCieloElemento.classList.add('mb-1');
+        tarjeta.appendChild(estadoCieloElemento);
+
+        const contenedorTarjeta = document.getElementById('contenedor-tarjeta');
+        contenedorTarjeta.appendChild(tarjeta);
+    }
+
+    const nombreCiudad = obtenerValorCookie('provinciaSeleccionada');
+
+    if (nombreCiudad) {
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const ciudad = filtrarDatosCiudad(data, nombreCiudad);
+                if (ciudad) {
+                    mostrarDatosProvincia(ciudad);
+                } else {
+                    console.log('No se encontraron datos para la ciudad:', nombreCiudad);
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+    } else {
+        console.log('No se encontró el nombre de la ciudad en la cookie.');
+    }
+</script>

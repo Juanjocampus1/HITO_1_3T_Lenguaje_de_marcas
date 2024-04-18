@@ -1,0 +1,37 @@
+---
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const footer = document.querySelector('footer');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    footer.classList.remove('fixed');
+                } else {
+                    footer.classList.add('fixed');
+                }
+            });
+        });
+
+        observer.observe(footer);
+    });
+}
+---
+<footer class="bg-gradient-to-r from-slate-500 to-slate-800 p-4 text-center text-zinc-400 bottom-0 left-0 w-full rounded-t-full">
+    <div>
+        <a target="_blank" href="https://www.el-tiempo.net/api" class="mb-2 hover:text-white transition duration-300 ease-in-out cursor-default">API del clima en tiempo real</a>
+        <p class="mb-2 hover:text-white transition duration-300 ease-in-out cursor-default">Todos los derechos reservados &copy; Juan José Acebedo Lara</p>
+        <p class="hover:text-white transition duration-300 ease-in-out cursor-default">HITO 1 LENGUAJE DE MARCAS</p>
+    </div>
+</footer>
+
+<style>
+    footer {
+        position: relative;
+    }
+
+    @media (max-height: 100vh) {
+        footer.fixed {
+            position: fixed;
+        }
+    }
+</style>
