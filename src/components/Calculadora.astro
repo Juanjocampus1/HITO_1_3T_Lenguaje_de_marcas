@@ -1,3 +1,136 @@
 ---
-$END$
+
 ---
+<div class="container mx-auto mt-8 max-w-xs">
+    <h1 class="px-3 py-6 text-white font-bold text-2xl flex justify-center items-center bg-gray-800 rounded-t-lg">Calculator</h1>
+    <div class="calculator bg-gray-300 rounded-b-lg shadow-lg">
+        <div class="calculator__display bg-gray-800 text-white text-right py-4 px-3 text-xl">0</div>
+
+        <div class="calculator__keys grid grid-cols-4 gap-1">
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ml-1 mt-1 " data-action="percent">%</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mt-1" data-action="square">x²</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mt-1" data-action="sqrt">√</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mr-1 mt-1" data-action="divide">÷</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ml-1">7</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg">8</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ">9</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mr-1" data-action="multiply">&times;</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ml-1">4</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ">5</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ">6</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mr-1" data-action="subtract">-</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ml-1">1</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ">2</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ">3</button>
+            <button class="key--operator bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mr-1" data-action="add">+</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg ml-1 mb-1">0</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mb-1" data-action="decimal">.</button>
+            <button class="bg-gray-600 hover:bg-gray-500 focus:bg-gray-700 text-gray-200 hover:text-gray-100 focus:text-gray-300 py-3 rounded shadow-lg mb-1" data-action="clear">AC</button>
+            <button class="key--equal bg-gradient-to-b from-blue-400 to-blue-600 text-white py-3 rounded shadow-lg col-span-1 mr-1 mb-1" data-action="calculate">=</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    const calculator = document.querySelector('.calculator');
+    const keys = calculator.querySelector('.calculator__keys');
+
+    keys.addEventListener('click', e => {
+        if (e.target.matches('button')) {
+            const key = e.target;
+            const action = key.dataset.action;
+            const keyContent = key.textContent;
+            const displayedNum = calculator.querySelector('.calculator__display').textContent;
+            const previousKeyType = calculator.dataset.previousKeyType;
+
+            Array.from(key.parentNode.children)
+                .forEach(k => k.classList.remove('is-depressed'));
+
+            if (!action) {
+                if (displayedNum === '0' || previousKeyType === 'operator' || previousKeyType === 'calculate') {
+                    calculator.querySelector('.calculator__display').textContent = keyContent;
+                } else {
+                    calculator.querySelector('.calculator__display').textContent = displayedNum + keyContent;
+                }
+                calculator.dataset.previousKeyType = 'number';
+            }
+
+            if (
+                action === 'add' ||
+                action === 'subtract' ||
+                action === 'multiply' ||
+                action === 'divide' ||
+                action === 'square' ||
+                action === 'sqrt' ||
+                action === 'percent'
+            ) {
+                key.classList.add('is-depressed');
+                calculator.dataset.previousKeyType = 'operator';
+                calculator.dataset.firstValue = displayedNum;
+                calculator.dataset.operator = action;
+            }
+
+            if (action === 'decimal') {
+                if (!displayedNum.includes('.')) {
+                    calculator.querySelector('.calculator__display').textContent = displayedNum + '.';
+                } else if (previousKeyType === 'operator' || previousKeyType === 'calculate') {
+                    calculator.querySelector('.calculator__display').textContent = '0.';
+                }
+                calculator.dataset.previousKeyType = 'decimal';
+            }
+
+            if (action === 'clear') {
+                calculator.querySelector('.calculator__display').textContent = '0';
+                delete calculator.dataset.firstValue;
+                delete calculator.dataset.operator;
+                calculator.dataset.previousKeyType = 'clear';
+            }
+
+            if (action === 'calculate') {
+                const firstValue = calculator.dataset.firstValue;
+                const operator = calculator.dataset.operator;
+                const secondValue = displayedNum;
+
+                if (firstValue && operator) {
+                    calculator.querySelector('.calculator__display').textContent = calculate(firstValue, operator, secondValue);
+                }
+
+                calculator.dataset.previousKeyType = 'calculate';
+            }
+        }
+    });
+
+    const calculate = (n1, operator, n2) => {
+        let result = '';
+
+        switch (operator) {
+            case 'add':
+                result = parseFloat(n1) + parseFloat(n2);
+                break;
+            case 'subtract':
+                result = parseFloat(n1) - parseFloat(n2);
+                break;
+            case 'multiply':
+                result = parseFloat(n1) * parseFloat(n2);
+                break;
+            case 'divide':
+                result = parseFloat(n1) / parseFloat(n2);
+                break;
+            case 'square':
+                result = parseFloat(n1) * parseFloat(n1);
+                break;
+            case 'sqrt':
+                result = Math.sqrt(parseFloat(n1));
+                break;
+            case 'percent':
+                result = parseFloat(n1) / 100;
+                break;
+            default:
+                return '0';
+        }
+
+        return result;
+    };
+</script>

@@ -1,5 +1,5 @@
 ---
-import { navigate } from "astro:content";
+
 ---
 
 <div id="comunidades-autonomas">
@@ -37,8 +37,8 @@ import { navigate } from "astro:content";
 
                 provinciaItem.textContent = provincia.NOMBRE_PROVINCIA;
                 provinciaItem.addEventListener('click', () => {
-                    // Guardar el nombre de la provincia en una cookie
-                    document.cookie = `provinciaSeleccionada=${provincia.NOMBRE_PROVINCIA}`;
+                    // Guardar el código de provincia en una cookie
+                    document.cookie = `codProvSeleccionado=${provincia.CODPROV}`;
                     // Redirigir a otra vista
                     window.location.href = '/TiempoProvincia/';
                 });
